@@ -9,14 +9,18 @@ Train.prototype.createNewRow = function () {
     let firstDeparture = moment(this.firstDeparture, 'HH:mm')
     let time = moment()
     let minutesAway = firstDeparture.diff(time, 'minutes')
-    var trainCount = 0
-    var trainsPerDay = Math.abs(Math.floor((firstDeparture.diff(moment().endOf("day"), 'minutes')) / this.frequency)) - 1
+    let trainCount = 0
+    let trainsPerDay = Math.abs(Math.floor((firstDeparture.diff(moment().endOf("day"), 'minutes')) / this.frequency)) - 1
     while (minutesAway < 0) {
         minutesAway += this.frequency
         trainCount++;
     }
+    nextDeparture = time.add(minutesAway, 'minutes')
+    if(!nextDeparture.isBetween(firstDeparture, moment().endOf("day"))) {
+        nextDeparture = firstDeparture
+    }
     ((trainCount == trainsPerDay) ? minutesAway = `Warning the Last Train for The day will be arriving in ${minutesAway} Minutes` : minutesAway = minutesAway)
-    nextDeparture = time.add(minutesAway, 'minutes').format('HH:mm')
+    
     var $row = $('<tr>');
     var $name = $('<td>', {
         text: this.name
@@ -28,7 +32,7 @@ Train.prototype.createNewRow = function () {
         text: this.frequency
     });
     var $nextArrival = $('<td>', {
-        text: nextDeparture
+        text: nextDeparture.format('HH:mm')
     });
     var $minutesAway = $('<td>', {
         text: minutesAway
@@ -43,8 +47,7 @@ var config = {
     storageBucket: "trainscheduler-e08a0.appspot.com",
     messagingSenderId: "897388412392"
 };
-//type = h or min
-// time = current time
+
 function TimePicker(type, currentTime) {
     var $dropdown = $('<div>');
     var $button = $('<button>', {
@@ -98,18 +101,12 @@ function gotData(data) {
 
 var newFirstDeparture = [00, ':', 00]
 $('.hour-dropdown-item').on('click', function () {
-    event.preventDefault()
     $('#hourBtn').html(this.id)
     newFirstDeparture[0] = this.id
-    console.log(this.id)
-    console.log(newFirstDeparture)
 })
 $('.minutes-dropdown-item').on('click', function () {
-    event.preventDefault()
     $('#minutesBtn').html(this.id)
     newFirstDeparture[2] = this.id
-    console.log(this.id)
-    console.log(newFirstDeparture)
 })
 
 $('#newTrain').submit(function () {
@@ -117,10 +114,9 @@ $('#newTrain').submit(function () {
     var name = $("#name").val()
     var city = $("#city").val()
     var province = $("#province").val()
-    var firstDeparture = `${newFirstDeparture[0]}:${newFirstDeparture[2]}`
-    console.log(firstDeparture)
+    var firstDeparture = parseInt(`${newFirstDeparture[0]}:${newFirstDeparture[2]}`)
     var frequency = $("#frequency").val()
     var newTrain = new Train(name, city, province, firstDeparture, frequency)
-    newTrain.createNewRow()
     trainRef.push(newTrain)
+    //location.reload()
 });
