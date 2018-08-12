@@ -118,5 +118,5 @@ $('#newTrain').submit(function () {
     var frequency = $("#frequency").val()
     var newTrain = new Train(name, city, province, firstDeparture, frequency)
     trainRef.push(newTrain)
-    //location.reload()
+    location.reload()
 });
