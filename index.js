@@ -16,11 +16,11 @@ Train.prototype.createNewRow = function () {
         trainCount++;
     }
     nextDeparture = time.add(minutesAway, 'minutes')
-    if(!nextDeparture.isBetween(firstDeparture, moment().endOf("day"))) {
+    if (!nextDeparture.isBetween(firstDeparture, moment().endOf("day"))) {
         nextDeparture = firstDeparture
     }
     ((trainCount == trainsPerDay) ? minutesAway = `Warning the Last Train for The day will be arriving in ${minutesAway} Minutes` : minutesAway = minutesAway)
-    
+
     var $row = $('<tr>');
     var $name = $('<td>', {
         text: this.name
@@ -114,8 +114,8 @@ $('#newTrain').submit(function () {
     var name = $("#name").val()
     var city = $("#city").val()
     var province = $("#province").val()
-    var firstDeparture = parseInt(`${newFirstDeparture[0]}:${newFirstDeparture[2]}`)
-    var frequency = $("#frequency").val()
+    var firstDeparture = `${newFirstDeparture[0]}:${newFirstDeparture[2]}`
+    var frequency = parseInt($("#frequency").val())
     var newTrain = new Train(name, city, province, firstDeparture, frequency)
     trainRef.push(newTrain)
     location.reload()
